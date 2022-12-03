@@ -1,6 +1,6 @@
 import pytest
 
-from day03 import find_common_item, priority
+from day03 import find_common_item, priority, split_backpack
 
 testbackpacks = [
     ('vJrwpWtwJgWrhcsFMMfFFhFp', 'p'),
@@ -14,7 +14,8 @@ testbackpacks = [
 
 @pytest.mark.parametrize('items, expected', testbackpacks)
 def test_find_common_item(items, expected):
-    assert expected == find_common_item(items)
+    compartments = split_backpack(items)
+    assert expected == find_common_item(compartments)
 
 
 testpriorities = [

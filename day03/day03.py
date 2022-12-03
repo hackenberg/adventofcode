@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
+from functools import reduce
 
 
 def part_1(data):
-    return sum(map(priority, map(find_common_item, data)))
+    return sum(map(priority, map(find_common_item, map(split_backpack, data))))
 
 
 def part_2(data):
-    # TODO
-    pass
+    def group(data):
+        for i in range(0, len(data) - 2, 3):
+            yield data[i], data[i+1], data[i+2]
+
+    return sum(map(priority, map(find_common_item, group(data))))
 
 
-def find_common_item(items):
-    comp1, comp2 = split_backpack(items)
-    intersection = set(comp1) & set(comp2)
+def find_common_item(compartments):
+    intersection = reduce(set.intersection, map(set, compartments))
     assert len(intersection) == 1
     return ''.join(intersection)
 
