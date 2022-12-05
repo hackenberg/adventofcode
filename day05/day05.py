@@ -10,13 +10,22 @@ def part_1(data):
     return get_message(stacks)
 
 
+def part_2(data):
+    stacks, instructions = data
+    for times, src, dest in instructions:
+        crates = popn(stacks[src], times)
+        stacks[dest] += crates
+    return get_message(stacks)
+
+
 def get_message(stacks):
     return ''.join([s[-1] for s in stacks])
 
 
-def part_2(data):
-    # TODO
-    pass
+def popn(stack, n):
+    buf = stack[-n:]
+    del stack[-n:]
+    return buf
 
 
 def parse_input():
@@ -52,6 +61,6 @@ def parse_instructions(instructions):
 
 
 if __name__ == '__main__':
-    data = parse_input()
-    print(f'Part 1: {part_1(data)}')
-    print(f'Part 2: {part_2(data)}')
+    # Parse input twice because we are going to modify it in place
+    print(f'Part 1: {part_1(parse_input())}')
+    print(f'Part 2: {part_2(parse_input())}')
