@@ -8,8 +8,9 @@ def part_1(data):
 
 
 def part_2(data):
-    # TODO
-    pass
+    for i in range(13, len(data)):
+        if len(set(data[i-14:i])) == 14:
+            return i
 
 
 def parse_input():
