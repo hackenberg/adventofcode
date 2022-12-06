@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-
-
-def part_1():
-    data = parse_input()
+def p1(f):
+    data = f.read().split('\n')
     max_calories = 0
     current_calories = 0
 
@@ -17,8 +14,8 @@ def part_1():
     return max_calories
 
 
-def part_2():
-    data = parse_input()
+def p2(f):
+    data = f.read().split('\n')
     inventory = []
     current_calories = 0
 
@@ -32,14 +29,3 @@ def part_2():
 
     inventory.sort(reverse=True)
     return sum(inventory[:3])
-
-
-def parse_input():
-    with open('input.txt', 'r') as f:
-        data = f.read().split('\n')
-    return data
-
-
-if __name__ == '__main__':
-    print(f'Part 1: {part_1()}')
-    print(f'Part 2: {part_2()}')

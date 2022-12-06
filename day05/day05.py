@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-
-
-def part_1(data):
-    stacks, instructions = data
+def p1(f):
+    stacks, instructions = parse_input(f)
     for times, src, dest in instructions:
         for i in range(0, times):
             crate = stacks[src].pop()
@@ -10,8 +7,8 @@ def part_1(data):
     return get_message(stacks)
 
 
-def part_2(data):
-    stacks, instructions = data
+def p2(f):
+    stacks, instructions = parse_input(f)
     for times, src, dest in instructions:
         crates = popn(stacks[src], times)
         stacks[dest] += crates
@@ -28,10 +25,8 @@ def popn(stack, n):
     return buf
 
 
-def parse_input():
-    with open('input.txt', 'r') as f:
-        data = f.read()
-    drawing, instructions = data.rstrip().split('\n\n')
+def parse_input(f):
+    drawing, instructions = f.read().rstrip().split('\n\n')
     return parse_drawing(drawing), parse_instructions(instructions)
 
 
@@ -58,9 +53,3 @@ def parse_instructions(instructions):
         instr[2] -= 1
         return instr
     return [parse_line(line) for line in instructions]
-
-
-if __name__ == '__main__':
-    # Parse input twice because we are going to modify it in place
-    print(f'Part 1: {part_1(parse_input())}')
-    print(f'Part 2: {part_2(parse_input())}')

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from abc import ABC
 
 
@@ -59,8 +58,9 @@ CHOICES = {
 }
 
 
-def part_1():
-    data = parse_input()
+def p1(f):
+    data = f.read().split('\n')[:-1]
+    data = map(lambda s: s.split(), data)
     score = 0
     for row in data:
         me = CHOICES[row[1]]
@@ -69,21 +69,11 @@ def part_1():
     return score
 
 
-def part_2():
-    data = parse_input()
+def p2(f):
+    data = f.read().split('\n')[:-1]
+    data = map(lambda s: s.split(), data)
     score = 0
     for row in data:
         opponent = CHOICES[row[0]]
         score += opponent.fulfill_prediction(row[1])
     return score
-
-
-def parse_input():
-    with open('input.txt', 'r') as f:
-        data = f.read().split('\n')[:-1]
-    return map(lambda s: s.split(), data)
-
-
-if __name__ == '__main__':
-    print(f'Part 1: {part_1()}')
-    print(f'Part 2: {part_2()}')

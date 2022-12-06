@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-
-
-def part_1(data):
+def p1(f):
+    data = f.read().split('\n')[:-1]
     return sum([fully_contains(r) for r in map(split_row, data)])
 
 
@@ -17,7 +15,8 @@ def fully_contains(row):
     return (sl <= sr and el >= er) or (sl >= sr and el <= er)
 
 
-def part_2(data):
+def p2(f):
+    data = f.read().split('\n')[:-1]
     return sum([overlaps(r) for r in map(split_row, data)])
 
 
@@ -30,15 +29,3 @@ def overlaps(row):
         return el >= sr
     else:
         return er >= sl
-
-
-def parse_input():
-    with open('input.txt', 'r') as f:
-        data = f.read().split('\n')[:-1]
-    return data
-
-
-if __name__ == '__main__':
-    data = parse_input()
-    print(f'Part 1: {part_1(data)}')
-    print(f'Part 2: {part_2(data)}')
