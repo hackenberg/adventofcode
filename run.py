@@ -27,7 +27,6 @@ def run(func, filename="filename"):
         print()
 
 
-
 def fetch_input(day, year=2022):
     """Fetches input files for Advent of Code challenges.
 
@@ -52,15 +51,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     input_paths = {
-        "sample": f"day{args.day:02}/input_sample.txt",
-        "input": f"day{args.day:02}/input.txt",
+        "sample": f"input/{args.year}/day{args.day:02}_sample.txt",
+        "input": f"input/{args.year}/day{args.day:02}.txt",
     }
 
     if not os.path.exists(input_paths["input"]):
         with open(input_paths["input"], "w") as f:
             f.write(fetch_input(day=args.day, year=args.year))
 
-    module_name = f"day{args.day:02}.day{args.day:02}"
+    module_name = f"{args.year}.day{args.day:02}"
     if args.extra:
         module_name += f"_{args.extra}"
 
