@@ -1,4 +1,4 @@
-day%:
-	mkdir $@
-	cp -n template.py $@/$@.py
-	chmod 755 $@/$@.py
+clean:
+	find . -type d -name __pycache__ -exec rm -r {} \;
+
+.PHONY: clean
