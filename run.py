@@ -6,6 +6,7 @@ https://github.com/oliver-ni/advent-of-code/blob/master/run.py
 """
 import argparse
 import os.path
+import pyperclip
 import requests
 import time
 import traceback
@@ -13,14 +14,17 @@ from datetime import datetime, timedelta, timezone
 from importlib import import_module, reload
 
 
-def run(func, filename="filename"):
+def run(func, filename="filename", copy_to_clipboard=False):
     try:
         with open(filename) as f:
             try:
                 start = time.monotonic_ns()
-                print(func(f), end="\t")
+                solution = func(f)
                 end = time.monotonic_ns()
+                print(solution, end="\t")
                 print(f"[{(end-start) / 10**6:.3f} ms]")
+                if copy_to_clipboard:
+                    pyperclip.copy(solution)
             except:
                 traceback.print_exc()
     except FileNotFoundError:
@@ -75,4 +79,4 @@ if __name__ == "__main__":
         run(getattr(module, func), input_paths["sample"])
         reload(module)
         print("input:", end="\t")
-        run(getattr(module, func), input_paths["input"])
+        run(getattr(module, func), input_paths["input"], copy_to_clipboard=True)
