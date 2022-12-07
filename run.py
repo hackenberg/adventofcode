@@ -35,7 +35,7 @@ def fetch_input(day, year=2022):
     """
     assert day > 0 and day <= 25
     assert year >= 2016
-    url = f'https://adventofcode.com/2022/day/{day}/input'
+    url = f'https://adventofcode.com/{year}/day/{day}/input'
     with open('session', 'r') as f:
         cookies = dict(session=f.read().strip())
     r = requests.get(url, cookies=cookies)
