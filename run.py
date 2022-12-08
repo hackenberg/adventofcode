@@ -23,7 +23,7 @@ def run(func, filename="filename", copy_to_clipboard=False):
                 end = time.monotonic_ns()
                 print(solution, end="\t")
                 print(f"[{(end-start) / 10**6:.3f} ms]")
-                if copy_to_clipboard:
+                if copy_to_clipboard and solution is not None:
                     pyperclip.copy(solution)
             except:
                 traceback.print_exc()
