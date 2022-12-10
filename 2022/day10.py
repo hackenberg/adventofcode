@@ -22,4 +22,31 @@ def p1(f):
 
 
 def p2(f):
-    pass
+    instructions = f.read().splitlines()
+    args = [1] + [0] * (len(instructions) * 2)
+    cycle = 0
+
+    for instr in instructions:
+        match instr.split():
+            case ["addx", arg]:
+                cycle += 2
+                args[cycle] = int(arg)
+            case ["noop"]:
+                cycle += 1
+            case other:
+                assert False
+
+    sprite = lambda c: sum(args[:c])
+
+    for c in range(240):
+        if c % 40 == 0:
+            print()
+
+        s = sprite(c + 1)
+
+        if (c % 40) >= s-1 and (c % 40) <= s+1:
+            print("#", end="")
+        else:
+            print(".", end="")
+
+    print()
