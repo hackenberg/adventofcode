@@ -1,8 +1,7 @@
-#import IPython; IPython.embed(colors="neutral")
-#import ipdb; ipdb.set_trace()
-
 def p1(f):
-    pass
+    lines = f.read().splitlines()
+    import IPython; IPython.embed(colors="neutral")
+    #import ipdb; ipdb.set_trace()
 
 
 def p2(f):
