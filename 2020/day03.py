@@ -1,4 +1,4 @@
-import aoc
+import math
 
 
 def p1(f):
@@ -16,7 +16,7 @@ def p2(f):
     ]
 
     lines = f.read().splitlines()
-    return aoc.mult(count_trees(lines, s) for s in slopes)
+    return math.prod(count_trees(lines, s) for s in slopes)
 
 
 def count_trees(lines, slope):
