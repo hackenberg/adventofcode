@@ -5,6 +5,7 @@ Heavily inspired by:
 https://github.com/oliver-ni/advent-of-code/blob/master/run.py
 """
 import argparse
+import cProfile, pstats, io
 import os.path
 import pyperclip
 import requests
@@ -52,6 +53,8 @@ if __name__ == "__main__":
     parser.add_argument("--year", "-y", type=int, help="The year to run.", default=now.year)
     parser.add_argument("--day", "-d", type=int, help="The day to run.", default=now.day)
     parser.add_argument("--extra", "-e", help="Choose a different solution to run.")
+    parser.add_argument("--profile", "-p", action="store_true", help="Collect performance metrics.")
+    parser.add_argument("--sample", "-s", action="store_true", help="Run on sample input only.")
     args = parser.parse_args()
 
     input_paths = {
@@ -59,7 +62,7 @@ if __name__ == "__main__":
         "input": f"input/{args.year}/day{args.day:02}.txt",
     }
 
-    if not os.path.exists(input_paths["input"]):
+    if not args.sample and not os.path.exists(input_paths["input"]):
         with open(input_paths["input"], "w") as f:
             f.write(fetch_input(day=args.day, year=args.year))
 
@@ -71,12 +74,28 @@ if __name__ == "__main__":
 
     module = import_module(module_name)
 
+    if args.profile:
+        pr = cProfile.Profile()
+
     for func in ("p1", "p2"):
         if not hasattr(module, func):
             continue
         print(f"--- {func} ---")
         print("sample:", end="\t")
+        args.profile and pr.enable()
         run(getattr(module, func), input_paths["sample"])
+        args.profile and pr.disable()
+        if args.sample:
+            continue
         reload(module)
         print("input:", end="\t")
+        args.profile and pr.enable()
         run(getattr(module, func), input_paths["input"], copy_to_clipboard=True)
+        args.profile and pr.disable()
+
+    if args.profile:
+        s = io.StringIO()
+        sortby = pstats.SortKey.CUMULATIVE
+        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+        ps.print_stats()
+        print(s.getvalue())
