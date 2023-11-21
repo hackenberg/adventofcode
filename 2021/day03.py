@@ -1,10 +1,11 @@
+from collections import defaultdict, deque
+from utils       import *
+
 import operator
 
 
-def p1(f):
-    lines = f.read().splitlines()
-    #import IPython; IPython.embed(colors="neutral")
-    #import ipdb; ipdb.set_trace()
+def p1(text):
+    lines = parse(text)
 
     gamma, epsilon = [], []
     for i in range(len(lines[0])):
@@ -15,8 +16,8 @@ def p1(f):
     return int("".join(gamma), base=2) * int("".join(epsilon), base=2)
 
 
-def p2(f):
-    lines = f.read().splitlines()
+def p2(text):
+    lines = parse(text)
 
     def f(lines, i=0, comp=operator.gt):
         if len(lines) <= 1:

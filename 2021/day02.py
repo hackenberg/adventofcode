@@ -1,5 +1,9 @@
-def p1(f):
-    lines = f.read().splitlines()
+from collections import defaultdict, deque
+from utils       import *
+
+
+def p1(text):
+    lines = parse(text)
     xpos, zpos = 0, 0
 
     for line in lines:
@@ -14,8 +18,8 @@ def p1(f):
     return xpos * zpos
 
 
-def p2(f):
-    lines = f.read().splitlines()
+def p2(text):
+    lines = parse(text)
     xpos, zpos, aim = 0, 0, 0
 
     for line in lines:

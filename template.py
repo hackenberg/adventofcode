@@ -1,8 +1,12 @@
-def p1(f):
-    lines = f.read().splitlines()
-    import IPython; IPython.embed(colors="neutral")
+from collections import defaultdict, deque
+from utils       import *
+
+
+def p1(text):
+    in1 = parse(text)
+    #import IPython; IPython.embed(colors="neutral")
     #import ipdb; ipdb.set_trace()
 
 
-def p2(f):
+def p2(text):
     pass
