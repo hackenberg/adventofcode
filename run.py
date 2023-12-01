@@ -6,42 +6,41 @@ https://github.com/oliver-ni/advent-of-code/blob/master/run.py
 """
 import argparse
 import cProfile, pstats, io
-import os.path
 import pyperclip
 import requests
 import time
 import traceback
 from datetime import datetime, timedelta, timezone
 from importlib import import_module, reload
+from pathlib import Path
+from typing import Callable
 
 
-def run(func, filename="filename", copy_to_clipboard=False):
+def run(func: Callable[[str], any], filepath: Path = Path("filename"), copy_to_clipboard: bool = False) -> None:
     try:
-        with open(filename) as f:
-            try:
-                start = time.monotonic_ns()
-                solution = func(f)
-                end = time.monotonic_ns()
-                print(solution, end="\t")
-                print(f"[{(end-start) / 10**6:.3f} ms]")
-                if copy_to_clipboard and solution is not None:
-                    pyperclip.copy(solution)
-            except:
-                traceback.print_exc()
+        start = time.monotonic_ns()
+        solution = func(filepath.read_text())
+        end = time.monotonic_ns()
+        print(solution, end="\t")
+        print(f"[{(end-start) / 10**6:.3f} ms]")
+        if copy_to_clipboard and solution is not None:
+            pyperclip.copy(solution)
     except FileNotFoundError:
         print()
+    except:
+        traceback.print_exc()
 
 
-def fetch_input(day, year=2022):
+def fetch_input(day: int, year: int = 2022) -> str:
     """Fetches input files for Advent of Code challenges.
 
     Since inputs differ by user, provide the session cookie in a file
     called 'session'.
     """
-    assert day > 0 and day <= 25
+    assert 0 < day <= 25
     assert year >= 2016
-    url = f'https://adventofcode.com/{year}/day/{day}/input'
-    with open('session', 'r') as f:
+    url = f"https://adventofcode.com/{year}/day/{day}/input"
+    with open("session", "r") as f:
         cookies = dict(session=f.read().strip())
     r = requests.get(url, cookies=cookies)
     return r.text
@@ -58,13 +57,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     input_paths = {
-        "sample": f"input/{args.year}/day{args.day:02}_sample.txt",
-        "input": f"input/{args.year}/day{args.day:02}.txt",
+        "sample": Path(f"input/{args.year}/day{args.day:02}_sample.txt"),
+        "input": Path(f"input/{args.year}/day{args.day:02}.txt"),
     }
 
-    if not args.sample and not os.path.exists(input_paths["input"]):
-        with open(input_paths["input"], "w") as f:
-            f.write(fetch_input(day=args.day, year=args.year))
+    input_paths["input"].parent.mkdir(parents=True, exist_ok=True)
+    input_paths["input"].write_text(fetch_input(day=args.day, year=args.year))
+
+    # TODO error in case sample input does not exist
 
     module_name = f"{args.year}.day{args.day:02}"
     if args.extra:

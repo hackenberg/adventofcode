@@ -1,3 +1,6 @@
+"""Heavily inspired by Peter Norvigs AdventUtils.
+see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
+"""
 from pathlib import Path
 from typing  import Callable, Tuple, Union
 
@@ -56,3 +59,17 @@ def the(sequence) -> object:
     for i, item in enumerate(sequence, 1):
         if i > 1: raise ValueError(f"'Expected exactly one item in the sequence.")
     return item
+
+
+"""My old functions:"""
+
+class Point(tuple):
+    def __add__(self, other):
+        return Point(a + b for a, b in zip(self, other))
+
+    def __sub__(self, other):
+        return Point(a - b for a, b in zip(self, other))
+
+
+def manhattan_distance(p1, p2):
+    return sum(map(abs, p1 - p2))
