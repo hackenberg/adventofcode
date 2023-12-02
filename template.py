@@ -1,4 +1,5 @@
-from collections import defaultdict, deque
+from collections import defaultdict, deque, namedtuple
+from math        import prod
 from utils       import *
 
 
