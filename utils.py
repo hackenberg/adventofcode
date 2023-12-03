@@ -1,13 +1,17 @@
 """Heavily inspired by Peter Norvigs AdventUtils.
 see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
-from pathlib import Path
-from typing  import Callable, Tuple, Union
+from collections import defaultdict, deque, namedtuple
+from itertools   import chain, groupby
+from math        import prod
+from pathlib     import Path
+from typing      import Callable, Iterable, List, Tuple, Union
 
+import operator
 import re
 
 INPUT_DIR = Path(__file__).parent / "input"
-YEAR = "2021"
+YEAR = "2023"
 
 lines = str.splitlines
 def paragraphs(text: str) -> list[str]: return text.split("\n\n")
@@ -60,6 +64,8 @@ def the(sequence) -> object:
         if i > 1: raise ValueError(f"'Expected exactly one item in the sequence.")
     return item
 
+
+flatten = chain.from_iterable
 
 """My old functions:"""
 
