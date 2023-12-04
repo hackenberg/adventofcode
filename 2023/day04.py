@@ -1,10 +1,9 @@
 from utils import *
 
 
-def parse_in1(text: str) -> tuple[set[str], set[str]]:
-    parsed = re.findall(r"(\d+|\|)", text)
-    separator = parsed.index("|")
-    return set(parsed[1:separator]), set(parsed[separator+1:])
+def parse_in1(line: str) -> tuple[set[str], set[str]]:
+    win, have = map(str.split, line.split(": ")[1].split(" | "))
+    return set(win), set(have)
 
 
 def p1(text: str) -> any:
