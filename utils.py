@@ -5,7 +5,7 @@ from collections import defaultdict, deque, namedtuple
 from itertools   import chain, groupby
 from math        import prod
 from pathlib     import Path
-from typing      import Callable, Iterable, List, Tuple, Union
+from typing      import Callable, Iterable, List, Sequence, Set, Tuple, Union
 
 import operator
 import re
@@ -17,7 +17,7 @@ lines = str.splitlines
 def paragraphs(text: str) -> list[str]: return text.split("\n\n")
 
 
-def parse(day_or_text, parser: Callable = str, sections: Callable = lines, sample: bool = False) -> tuple:
+def parse(day_or_text, parser: callable = str, sections: callable = lines, sample: bool = False) -> tuple:
     text = get_text(day_or_text, sample)
     return mapt(parser, sections(text.rstrip()))
 
@@ -33,18 +33,18 @@ def get_text(day_or_text: Union[int, str], sample: bool = False) -> str:
 
 """Functions that can be used as the parser argument:"""
 
-def ints(text: str) -> Tuple[int]:
+def ints(text: str) -> tuple[int]:
     """A tuple of all the integers in text, ignoring non-number characters."""
     return mapt(int, re.findall(r'-?[0-9]+', text))
 
 
 """Helper functions:"""
 
-def mapt(function: Callable, *sequences) -> tuple:
+def mapt(function: callable, *sequences) -> tuple:
     """`map`, with the result as a tuple."""
     return tuple(map(function, *sequences))
 
-def mapl(function: Callable, *sequences) -> list:
+def mapl(function: callable, *sequences) -> list:
     """`map`, with the result as a list."""
     return list(map(function, *sequences))
 
@@ -64,6 +64,10 @@ def the(sequence) -> object:
         if i > 1: raise ValueError(f"'Expected exactly one item in the sequence.")
     return item
 
+def intersection(sets: Sequence[set[object]]) -> set[object]:
+    """Intersection of several sets; error if no sets"""
+    first, *rest = sets
+    return first.intersection(*rest)
 
 flatten = chain.from_iterable
 
