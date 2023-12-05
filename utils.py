@@ -2,8 +2,8 @@
 see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
 from collections import defaultdict, deque, namedtuple
-from itertools   import chain, groupby
-from math        import prod
+from itertools   import chain, count, groupby
+from math        import inf, prod
 from pathlib     import Path
 from typing      import Callable, Iterable, List, Sequence, Set, Tuple, Union
 
