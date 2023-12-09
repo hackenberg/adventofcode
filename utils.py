@@ -1,7 +1,7 @@
 """Heavily inspired by Peter Norvigs AdventUtils.
 see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
-from collections import defaultdict, deque, namedtuple
+from collections import Counter, defaultdict, deque, namedtuple
 from itertools   import chain, count, groupby
 from math        import inf, prod
 from pathlib     import Path
@@ -31,6 +31,18 @@ def get_text(day_or_text: Union[int, str], sample: bool = False) -> str:
     return input_file.read_text()
 
 
+def show_items(source, items, show: int, hr="─"*100):
+    """Show the first few items, in a pretty format."""
+    if show:
+        types = Counter(map(type, items))
+        counts = ", ".join(f"{n} {t.__name__}{'' if n == 1 else 's'}" for t, n in types.items())
+        print(f"\n{hr}\n{source} ➜ {counts}:\n{hr}")
+        for line in items[:show]:
+            print(truncate(line))
+        if show < len(items):
+            print('...')
+
+
 """Functions that can be used as the parser argument:"""
 
 def ints(text: str) -> tuple[int]:
@@ -39,6 +51,11 @@ def ints(text: str) -> tuple[int]:
 
 
 """Helper functions:"""
+
+def truncate(object, width=100, ellipsis=' ...') -> str:
+    """Use ellipsis to truncate `str(object)` to `width` characters, if necessary."""
+    string = str(object)
+    return string if len(string) <= width else string[:width-len(ellipsis)] + ellipsis
 
 def mapt(function: callable, *sequences) -> tuple:
     """`map`, with the result as a tuple."""
