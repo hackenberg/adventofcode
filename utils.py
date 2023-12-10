@@ -1,7 +1,7 @@
 """Heavily inspired by Peter Norvigs AdventUtils.
 see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
-from collections import Counter, defaultdict, deque, namedtuple
+from collections import abc, Counter, defaultdict, deque, namedtuple
 from itertools   import chain, count, groupby
 from math        import inf, prod
 from pathlib     import Path
@@ -116,14 +116,26 @@ def add(p: Point, q: Point) -> Point: return mapt(operator.add, p, q)
 """Points on a Grid"""
 
 class Grid(dict):
+    """A 2D grid, implemented as a mapping of {(x, y): cell_contents}."""
+
     def __init__(self, grid=(), directions=directions4, skip: Tuple[any] = (), default: any = KeyError):
+        """Initialize with either (e.g.)
+        `Grid({(0, 0): '#', (1, 0): '.', ...})`, or
+        `Grid(["#..", "..#"]),
+         or `Grid("#..\n..#")`.
+         """
         super().__init__()
         self.directions = directions
         self.default = default
-        self.update({(x, y): val
-                     for y, row in enumerate(grid)
-                     for x, val in enumerate(row)
-                     if val not in skip})
+        if isinstance(grid, abc.Mapping):
+            self.update(grid)
+        else:
+            if isinstance(grid, str):
+                grid = str.splitlines()
+            self.update({(x, y): val
+                        for y, row in enumerate(grid)
+                        for x, val in enumerate(row)
+                        if val not in skip})
 
     def __missing__(self, point):
         """If asked for a point off the grid, either return default or raise error."""

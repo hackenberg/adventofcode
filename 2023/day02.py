@@ -24,8 +24,6 @@ def p2(text: str) -> any:
     for line in in2:
         minimum_set = {"red": 0, "green": 0, "blue": 0}
         for amount, color in pattern.findall(line):
-            amount = int(amount)
-            if minimum_set[color] < amount:
-                minimum_set[color] = amount
+            minimum_set[color] = max(minimum_set[color], int(amount))
         ans += prod(minimum_set.values())
     return ans

@@ -5,6 +5,7 @@ from utils       import *
 def p1(text: str) -> any:
     in1 = parse(text, ints)
     return sum(map(first_and_last, map(lambda x: "".join(map(str, x)), in1)))
+    #return sum(map(first_and_last, map(lambda x: "".join(x), map(str, in1))))
 
 
 def first_and_last(s: str) -> int:
