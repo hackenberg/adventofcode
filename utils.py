@@ -2,7 +2,8 @@
 see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
 from collections import abc, Counter, defaultdict, deque, namedtuple
-from itertools   import combinations, chain, count, groupby
+from itertools   import combinations, chain, groupby
+from itertools   import count as count_from, product as cross_product
 from math        import inf, prod
 from pathlib     import Path
 from typing      import Callable, Iterable, List, Sequence, Set, Tuple, TypeVar, Union
