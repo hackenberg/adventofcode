@@ -1,5 +1,4 @@
-from collections import defaultdict, deque
-from utils       import *
+from utils import *
 
 
 def p1(text: str) -> any:
@@ -13,7 +12,8 @@ def first_and_last(s: str) -> int:
 
 def p2(text: str) -> any:
     in2 = parse(text)
-    pattern = re.compile(r"([0-9]|one|two|three|four|five|six|seven|eight|nine).*([0-9]|one|two|three|four|five|six|seven|eight|nine)")
+    r = r"[0-9]|one|two|three|four|five|six|seven|eight|nine"
+    pattern = re.compile(rf"({r}).*({r})")
     total = 0
     for line in in2:
         match = pattern.search(line)

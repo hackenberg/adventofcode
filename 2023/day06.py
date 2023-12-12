@@ -2,7 +2,7 @@ from utils import *
 
 
 def ways_to_win(time: int, distance: int) -> int:
-    return sum(x * y > distance for x, y in enumerate(range(time, 0, -1)))
+    return sum((x * (time - x)) > distance for x in range(time))
 
 
 def p1(text: str) -> any:

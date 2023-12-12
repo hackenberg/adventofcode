@@ -1,6 +1,4 @@
-from collections import defaultdict, deque, namedtuple
-from math        import prod
-from utils       import *
+from utils import *
 
 pattern = re.compile(r"(\d+) (red|green|blue)")
 
