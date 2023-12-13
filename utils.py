@@ -2,7 +2,7 @@
 see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
 from collections import abc, Counter, defaultdict, deque, namedtuple
-from itertools   import combinations, chain, groupby
+from itertools   import combinations, chain, groupby, permutations
 from itertools   import count as count_from, product as cross_product
 from math        import inf, prod
 from pathlib     import Path
@@ -11,7 +11,7 @@ from typing      import Callable, Iterable, List, Sequence, Set, Tuple, TypeVar,
 import operator
 import re
 
-T = TypeVar("T")
+R = TypeVar("R")
 
 INPUT_DIR = Path(__file__).parent / "input"
 YEAR = "2023"
@@ -71,6 +71,10 @@ def mapl(function: callable, *sequences) -> list:
 
 """Utility functions:"""
 
+def T(matrix: Sequence[Sequence]) -> list[tuple]:
+    """The transpose of a matrix: T([(1,2,3), (4,5,6)]) == [(1,4), (2,5), (3,6)]"""
+    return list(zip(*matrix))
+
 def cover(*integers) -> range:
     """A `range` that covers all the given integers, and any in between them.
     cover(lo, hi) is an inclusive (or closed) range, equal to range(lo, hi + 1).
@@ -84,7 +88,7 @@ def the(sequence):
         if i > 1: raise ValueError(f"'Expected exactly one item in the sequence.")
     return item
 
-def intersection(sets: Sequence[set[T]]) -> set[T]:
+def intersection(sets: Sequence[set[R]]) -> set[R]:
     """Intersection of several sets; error if no sets"""
     first, *rest = sets
     return first.intersection(*rest)
@@ -103,11 +107,11 @@ directions8 = directions4 + diagonals
 def X_(point: Point) -> int: "X coordinate of a point"; return point[0]
 def Y_(point: Point) -> int: "Y coordinate of a point"; return point[1]
 
-def Xs(points: Iterable[Point]) -> Tuple[int]:
+def Xs(points: Sequence[Point]) -> tuple[int, ...]:
     """X coordinates of a collection of points"""
     return mapt(X_, points)
 
-def Ys(points: Iterable[Point]) -> Tuple[int]:
+def Ys(points: Sequence[Point]) -> tuple[int, ...]:
     """Y coordinates of a collection of points"""
     return mapt(Y_, points)
 
@@ -117,7 +121,7 @@ def add(p: Point, q: Point) -> Point: return mapt(operator.add, p, q)
 """Points on a Grid"""
 
 class Grid(dict):
-    def __init__(self, grid=(), directions=directions4, skip: Tuple[any] = (), default: any = KeyError):
+    def __init__(self, grid=(), directions=directions4, skip: tuple[any] = (), default: any = KeyError):
         super().__init__()
         self.directions = directions
         self.default = default
@@ -137,7 +141,7 @@ class Grid(dict):
             raise KeyError(point)
         return self.default
 
-    def neighbors(self, point: Point) -> List[Point]:
+    def neighbors(self, point: Point) -> list[Point]:
         """Points on the grid that neighbor `point`."""
         return [add(point, d) for d in self.directions
                 if add(point, d) in self]
@@ -146,7 +150,7 @@ class Grid(dict):
         """The contents of the neighboring points."""
         return (self[p] for p in self.neighbors(point))
 
-    def to_rows(self, xrange=None, yrange=None) -> List[List[any]]:
+    def to_rows(self, xrange=None, yrange=None) -> list[list[any]]:
         """The contents of the grid, as a rectangular list of lists.
            You can define a window with an xrange and yrange; or they default to the whole grid."""
         xrange = xrange or cover(Xs(self))
