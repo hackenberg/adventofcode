@@ -2,7 +2,7 @@
 see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
 from collections import abc, Counter, defaultdict, deque, namedtuple
-from itertools   import combinations, chain, groupby
+from itertools   import combinations, chain, groupby, permutations
 from itertools   import count as count_from, product as cross_product
 from math        import inf, prod
 from pathlib     import Path
@@ -11,7 +11,7 @@ from typing      import Callable, Iterable, List, Sequence, Set, Tuple, TypeVar,
 import operator
 import re
 
-T = TypeVar("T")
+R = TypeVar("R")
 
 INPUT_DIR = Path(__file__).parent / "input"
 YEAR = "2023"
@@ -20,9 +20,13 @@ lines = str.splitlines
 def paragraphs(text: str) -> list[str]: return text.split("\n\n")
 
 
-def parse(day_or_text, parser: callable = str, sections: callable = lines, sample: bool = False) -> tuple:
+def parse(day_or_text, parser: callable = str, sections: callable = lines, show: int = 0, sample: bool = False) -> tuple:
     text = get_text(day_or_text, sample)
-    return mapt(parser, sections(text.rstrip()))
+    show_items("Puzzle input", text.splitlines(), show)
+    records = mapt(parser, sections(text.rstrip()))
+    if parser != str or sections != lines:
+        show_items("Parsed representation", records, show)
+    return records
 
 
 def get_text(day_or_text: Union[int, str], sample: bool = False) -> str:
@@ -48,9 +52,36 @@ def show_items(source, items, show: int, hr="─"*100):
 
 """Functions that can be used as the parser argument:"""
 
+Char = str  # Intended as the type of a one-character string
+Atom = Union[str, float, int]  # The type of a string or number
+
 def ints(text: str) -> tuple[int]:
     """A tuple of all the integers in text, ignoring non-number characters."""
     return mapt(int, re.findall(r'-?[0-9]+', text))
+
+def positive_ints(text: str) -> tuple[int]:
+    """A tuple of all the integers in text, ignoring non-number characters."""
+    return mapt(int, re.findall(r'[0-9]+', text))
+
+def digits(text: str) -> tuple[int]:
+    """A tuple of all the digits in text (as ints 0–9), ignoring non-digit characters."""
+    return mapt(int, re.findall(r'[0-9]', text))
+
+def words(text: str) -> tuple[str]:
+    """A tuple of all the alphabetic words in text, ignoring non-letters."""
+    return tuple(re.findall(r'[a-zA-Z]+', text))
+
+def atoms(text: str) -> tuple[Atom]:
+    """A tuple of all the atoms (numbers or identifiers) in text. Skip punctuation."""
+    return mapt(atom, re.findall(r'[+-]?\d+\.?\d*|\w+', text))
+
+def atom(text: str) -> Atom:
+    """Parse text into a single float or int or str."""
+    try:
+        x = float(text)
+        return round(x) if x.is_integer() else x
+    except ValueError:
+        return text.strip()
 
 
 """Helper functions:"""
@@ -71,6 +102,10 @@ def mapl(function: callable, *sequences) -> list:
 
 """Utility functions:"""
 
+def T(matrix: Sequence[Sequence]) -> list[tuple]:
+    """The transpose of a matrix: T([(1,2,3), (4,5,6)]) == [(1,4), (2,5), (3,6)]"""
+    return list(zip(*matrix))
+
 def cover(*integers) -> range:
     """A `range` that covers all the given integers, and any in between them.
     cover(lo, hi) is an inclusive (or closed) range, equal to range(lo, hi + 1).
@@ -84,7 +119,7 @@ def the(sequence):
         if i > 1: raise ValueError(f"'Expected exactly one item in the sequence.")
     return item
 
-def intersection(sets: Sequence[set[T]]) -> set[T]:
+def intersection(sets: Sequence[set[R]]) -> set[R]:
     """Intersection of several sets; error if no sets"""
     first, *rest = sets
     return first.intersection(*rest)
@@ -95,6 +130,7 @@ flatten = chain.from_iterable
 """Points in Space"""
 
 Point = Tuple[int, ...]
+Vector = Point
 
 directions4 = East, South, West, North = ((1, 0), (0, 1), (-1, 0), (0, -1))
 diagonals = SE, NE, SW, NW = ((1, 1), (1, -1), (-1, 1), (-1, -1))
@@ -103,21 +139,22 @@ directions8 = directions4 + diagonals
 def X_(point: Point) -> int: "X coordinate of a point"; return point[0]
 def Y_(point: Point) -> int: "Y coordinate of a point"; return point[1]
 
-def Xs(points: Iterable[Point]) -> Tuple[int]:
+def Xs(points: Sequence[Point]) -> tuple[int, ...]:
     """X coordinates of a collection of points"""
     return mapt(X_, points)
 
-def Ys(points: Iterable[Point]) -> Tuple[int]:
+def Ys(points: Sequence[Point]) -> tuple[int, ...]:
     """Y coordinates of a collection of points"""
     return mapt(Y_, points)
 
 def add(p: Point, q: Point) -> Point: return mapt(operator.add, p, q)
+def sub(p: Point, q: Point) -> Point: return mapt(operator.sub, p, q)
 
 
 """Points on a Grid"""
 
 class Grid(dict):
-    def __init__(self, grid=(), directions=directions4, skip: Tuple[any] = (), default: any = KeyError):
+    def __init__(self, grid=(), directions=directions4, skip: tuple[any] = (), default: any = KeyError):
         super().__init__()
         self.directions = directions
         self.default = default
@@ -137,7 +174,7 @@ class Grid(dict):
             raise KeyError(point)
         return self.default
 
-    def neighbors(self, point: Point) -> List[Point]:
+    def neighbors(self, point: Point) -> list[Point]:
         """Points on the grid that neighbor `point`."""
         return [add(point, d) for d in self.directions
                 if add(point, d) in self]
@@ -146,7 +183,7 @@ class Grid(dict):
         """The contents of the neighboring points."""
         return (self[p] for p in self.neighbors(point))
 
-    def to_rows(self, xrange=None, yrange=None) -> List[List[any]]:
+    def to_rows(self, xrange=None, yrange=None) -> list[list[any]]:
         """The contents of the grid, as a rectangular list of lists.
            You can define a window with an xrange and yrange; or they default to the whole grid."""
         xrange = xrange or cover(Xs(self))
