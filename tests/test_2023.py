@@ -40,7 +40,7 @@ import pytest
     (16.2, None),
     (17.1, None),
     (17.2, None),
-    (18.1, None),
+    (18.1, 31171),
     (18.2, None),
     (19.1, None),
     (19.2, None),
