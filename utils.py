@@ -6,7 +6,7 @@ from itertools   import combinations, chain, groupby, permutations
 from itertools   import count as count_from, product as cross_product
 from math        import inf, prod
 from pathlib     import Path
-from typing      import Callable, Iterable, List, Sequence, Set, Tuple, TypeVar, Union
+from typing      import Iterable, Sequence, TypeVar, Union
 
 import operator
 import re
@@ -124,6 +124,10 @@ def intersection(sets: Sequence[set[R]]) -> set[R]:
     first, *rest = sets
     return first.intersection(*rest)
 
+def dot_product(vec1, vec2):
+    """The dot product of two vectors."""
+    return sum(map(operator.mul, vec1, vec2))
+
 flatten = chain.from_iterable
 
 
@@ -136,8 +140,8 @@ directions4 = East, South, West, North = ((1, 0), (0, 1), (-1, 0), (0, -1))
 diagonals = SE, NE, SW, NW = ((1, 1), (1, -1), (-1, 1), (-1, -1))
 directions8 = directions4 + diagonals
 
-def X_(point: Point) -> int: "X coordinate of a point"; return point[0]
-def Y_(point: Point) -> int: "Y coordinate of a point"; return point[1]
+def X_(point: Point) -> int: """X coordinate of a point"""; return point[0]
+def Y_(point: Point) -> int: """Y coordinate of a point"""; return point[1]
 
 def Xs(points: Sequence[Point]) -> tuple[int, ...]:
     """X coordinates of a collection of points"""

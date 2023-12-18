@@ -1,7 +1,5 @@
 from utils import *
 
-import numpy as np
-
 TRENCH = "#"
 
 
@@ -57,9 +55,7 @@ def parse_in2(line: str) -> tuple[str, int]:
 
 
 def shoelace_formula(xs: list[int], ys: list[int]) -> int:
-    # TODO implement by hand and remove numpy; should be fast enough
-    polygon_area = np.abs(np.dot(xs, np.roll(ys, 1)) - np.dot(ys, np.roll(xs, 1))) // 2
-    return int(polygon_area)  # convert from numpy int64 to int
+    return abs(dot_product(xs, (ys[1:] + [ys[0]])) - dot_product(xs[1:] + [xs[0]], ys)) // 2
 
 
 def p2(text: str) -> any:

@@ -1,4 +1,3 @@
-numpy~=1.21
 requests~=2.25
 pyperclip~=1.8
 pytest~=7.4

@@ -35,6 +35,14 @@ def test_intersection():
     assert intersection([{1, 2, 3}, {2, 3, 4}, {2, 4, 6, 8}]) == {2}
 
 
+def test_dot_product():
+    assert dot_product([1, 2, 3, 4], [1000, 100, 10, 1]) == 1234
+
+
+def test_flatten():
+    assert list(flatten([{1, 2, 3}, (4, 5, 6), [7, 8, 9]])) == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+
 def test_points_in_space():
     p, q = (0, 3), (4, 0)
     assert Y_(p) == 3 and X_(q) == 4
