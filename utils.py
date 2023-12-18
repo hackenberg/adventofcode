@@ -129,7 +129,7 @@ flatten = chain.from_iterable
 
 """Points in Space"""
 
-Point = Tuple[int, ...]
+Point = tuple[int, ...]
 Vector = Point
 
 directions4 = East, South, West, North = ((1, 0), (0, 1), (-1, 0), (0, -1))
@@ -149,6 +149,7 @@ def Ys(points: Sequence[Point]) -> tuple[int, ...]:
 
 def add(p: Point, q: Point) -> Point: return mapt(operator.add, p, q)
 def sub(p: Point, q: Point) -> Point: return mapt(operator.sub, p, q)
+def mul(p: Point, k: int) -> Point:   return tuple(k * c for c in p)
 
 
 """Points on a Grid"""
