@@ -6,6 +6,7 @@ https://github.com/oliver-ni/advent-of-code/blob/master/run.py
 """
 import argparse
 import cProfile, pstats, io
+import os
 import pyperclip
 import requests
 import time
@@ -62,7 +63,8 @@ if __name__ == "__main__":
     }
 
     input_paths["input"].parent.mkdir(parents=True, exist_ok=True)
-    input_paths["input"].write_text(fetch_input(day=args.day, year=args.year))
+    if not args.sample and not os.path.exists(input_paths["input"]):
+        input_paths["input"].write_text(fetch_input(day=args.day, year=args.year))
 
     # TODO error in case sample input does not exist
 
