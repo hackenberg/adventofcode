@@ -2,19 +2,21 @@
 see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
 from collections import abc, Counter, defaultdict, deque, namedtuple
+from enum        import Enum
 from itertools   import combinations, chain, groupby, permutations
 from itertools   import count as count_from, product as cross_product
 from math        import inf, prod
 from pathlib     import Path
-from typing      import Iterable, Sequence, TypeVar, Union
+from typing      import Callable, Iterable, Sequence, TypeVar, Union
 
+import heapq
 import operator
 import re
 
 R = TypeVar("R")
 
 INPUT_DIR = Path(__file__).parent / "input"
-YEAR = "2023"
+YEAR = "2024"
 
 lines = str.splitlines
 def paragraphs(text: str) -> list[str]: return text.split("\n\n")
@@ -99,6 +101,14 @@ def mapl(function: callable, *sequences) -> list:
     """`map`, with the result as a list."""
     return list(map(function, *sequences))
 
+def zipt(*sequences) -> tuple:
+    """`zip`, with the result as a tuple."""
+    return tuple(zip(*sequences))
+
+def zipl(*sequences) -> list:
+    """`zip`, with the result as a list."""
+    return list(zip(*sequences))
+
 
 """Utility functions:"""
 
@@ -130,6 +140,14 @@ def dot_product(vec1, vec2):
 
 flatten = chain.from_iterable
 
+def is_ascending(seq: Sequence[any], strictly=True) -> bool:
+    op = operator.lt if strictly else operator.le
+    return all(op(x, y) for x, y in zip(seq, seq[1:]))
+
+def is_descending(seq: Sequence[any], strictly=True) -> bool:
+    op = operator.gt if strictly else operator.ge
+    return all(op(x, y) for x, y in zip(seq, seq[1:]))
+
 
 """Points in Space"""
 
@@ -153,7 +171,8 @@ def Ys(points: Sequence[Point]) -> tuple[int, ...]:
 
 def add(p: Point, q: Point) -> Point: return mapt(operator.add, p, q)
 def sub(p: Point, q: Point) -> Point: return mapt(operator.sub, p, q)
-def mul(p: Point, k: int) -> Point:   return tuple(k * c for c in p)
+def mul(p: Point, k: int) -> Vector:  return tuple(k * c for c in p)
+#def neg(p: Point) -> Vector:          return mapt(operator.neg, p)
 
 
 """Points on a Grid"""
@@ -206,3 +225,112 @@ class Grid(dict):
 def manhattan_distance(p: Point, q: Point) -> int:
     """Manhattan (L1) distance between two 2D Points."""
     return abs(p[0] - q[0]) + abs(p[1] - q[1])
+
+
+""" A* Search """
+
+class Node:
+    """A Node in a search tree."""
+    def __init__(self, state, parent=None, action=None, path_cost=0):
+        self.state = state
+        self.parent = parent
+        self.action = action
+        self.path_cost = path_cost
+
+    def __repr__(self):      return f"Node({self.state}, path_cost={self.path_cost})"
+    def __len__(self):       return 0 if self.parent is None else (1 + len(self.parent))
+    def __lt__(self, other): return self.path_cost < other.path_cost
+
+search_failure = Node('failure', path_cost=inf) # Indicates an algorithm couldn't find a solution.
+
+class SearchProblem:
+    def __init__(self, initial=None, goal=None, **kwargs):
+        self.initial = initial
+        self.goal = goal
+        self.__dict__.update(**kwargs)
+
+    def actions(self, state):        raise NotImplementedError
+    def result(self, state, action): return action  # Simplest case: action is result state
+    def is_goal(self, state):        return state == self.goal
+    def action_cost(self, s, a, s1): return 1
+    def h(self, node):               return 0  # Never overestimate!
+
+class GridProblem(SearchProblem):
+    """Problem for searching a grid from a start to a goal location.
+       A state is just an (x, y) location in the grid."""
+    def __init__(self, grid, **kwargs):
+        super().__init__(**kwargs)
+        self.grid = grid
+
+    def actions(self, loc: Point) -> list[Point]:
+        return self.grid.neighbors(loc)
+
+    def result(self, loc1: Point, loc2: Point) -> Point:
+        return loc2
+
+    def h(self, node: Node) -> int:
+        return manhattan_distance(node.state, self.goal)
+
+def expand(problem, node):
+    """Expand a node, generating the children nodes."""
+    s = node.state
+    for action in problem.actions(s):
+        s1 = problem.result(s, action)
+        cost = node.path_cost + problem.action_cost(s, action, s1)
+        yield Node(s1, node, action, cost)
+
+def A_star_search(problem: SearchProblem, h: Callable[[any], int] = None) -> Node:
+    """Search nodes with minimum f(n) = path_cost(n) + h(n) value first."""
+    h = h or problem.h
+    return best_first_search(problem, f=lambda n: n.path_cost + h(n))
+
+def best_first_search(problem: SearchProblem, f: Callable[[any], int]) -> Node:
+    """Search nodes with minimum f(node) value first."""
+    node = Node(problem.initial)
+    frontier = PriorityQueue([node], key=f)
+    reached = {problem.initial: node}
+    while frontier:
+        node = frontier.pop()
+        if problem.is_goal(node.state):
+            return node
+        for child in expand(problem, node):
+            s = child.state
+            if s not in reached or child < reached[s]:
+                reached[s] = child
+                frontier.add(child)
+    return search_failure
+
+def path_actions(node):
+    """The sequence of actions to get to this node."""
+    if node.parent is None: return []
+    return path_actions(node.parent) + [node.action]
+
+def path_states(node):
+    """The sequence of states to get to this node."""
+    if node in (search_failure, None): return []
+    return path_states(node.parent) + [node.state]
+
+
+"""Other Data Structures"""
+
+class PriorityQueue:
+    """A queue in which the item with minimum key(item) is always popped first."""
+
+    def __init__(self, items=(), key=lambda x: x):
+        self.key = key
+        self.items = []  # a heap of (score, item) pairs
+        for item in items:
+            self.add(item)
+
+    def add(self, item):
+        """Add item to the queue."""
+        pair = (self.key(item), item)
+        heapq.heappush(self.items, pair)
+
+    def pop(self):
+        """Pop and return the item with min f(item) value."""
+        return heapq.heappop(self.items)[1]
+
+    def top(self): return self.items[0][1]
+
+    def __len__(self): return len(self.items)
