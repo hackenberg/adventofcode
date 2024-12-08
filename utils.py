@@ -178,15 +178,26 @@ def mul(p: Point, k: int) -> Vector:  return tuple(k * c for c in p)
 """Points on a Grid"""
 
 class Grid(dict):
+    """A 2D grid, implemented as a mapping of {(x, y): cell_contents}."""
+
     def __init__(self, grid=(), directions=directions4, skip: tuple[any] = (), default: any = KeyError):
+        """Initialize one of four ways:
+        `Grid({(0, 0): '#', (1, 0): '.', ...})`
+        `Grid(another_grid)`
+        `Grid(["#..", "..#"])`
+        `Grid("#..\n..#])`
+        """
         super().__init__()
         self.directions = directions
+        self.skip = skip
         self.default = default
         if isinstance(grid, abc.Mapping):
             self.update(grid)
+            self.size = (len(cover(Xs(self))), len(cover(Ys(self))))
         else:
             if isinstance(grid, str):
                 grid = grid.splitlines()
+            self.size = (max(map(len, grid)), len(grid))
             self.update({(x, y): val
                          for y, row in enumerate(grid)
                          for x, val in enumerate(row)
@@ -197,6 +208,11 @@ class Grid(dict):
         if self.default is KeyError:
             raise KeyError(point)
         return self.default
+
+    def in_range(self, point) -> bool:
+        """Is the point within range of the grids size?"""
+        return (0 <= X_(point) < X_(self.size) and
+                0 <= Y_(point) < Y_(self.size))
 
     def neighbors(self, point: Point) -> list[Point]:
         """Points on the grid that neighbor `point`."""
