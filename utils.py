@@ -3,9 +3,10 @@ see: https://github.com/norvig/pytudes/blob/main/ipynb/AdventUtils.ipynb
 """
 from collections import abc, Counter, defaultdict, deque, namedtuple
 from enum        import Enum
+from functools   import cache, reduce
 from itertools   import combinations, chain, groupby, permutations
 from itertools   import count as count_from, product as cross_product
-from math        import inf, prod
+from math        import ceil, floor, inf, prod
 from pathlib     import Path
 from typing      import Callable, Iterable, Sequence, TypeVar, Union
 
