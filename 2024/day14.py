@@ -41,19 +41,15 @@ def moveN(p: int, v: int, r: int, n: int) -> int:
 
 
 def p2(text: str) -> any:
+    """Print p2 output to file and ctr+f for solution"""
     robots = parse(text, ints)
 
     xrange = 101
     yrange = 103
-    ticks = 100
-
-    robots = [
-        (moveN(px, vx, xrange, ticks), moveN(py, vy, yrange, ticks), vx, vy)
-        for px, py, vx, vy in robots
-    ]
+    input("Press Ctrl+d to skip sample and Enter to continue...")
 
     i = 0
-    while True:
+    while i < 15000:
         print(f"i={i}")
         g = Grid(Counter((px, py) for px, py, _, _ in robots), default=".")
         g.print()
@@ -62,6 +58,3 @@ def p2(text: str) -> any:
             for px, py, vx, vy in robots
         ]
         i += 1
-        input("Press Enter to continue...")
-
-
